@@ -14,10 +14,14 @@ import ca.concordia.soen6591.antipattern_detector.visitors.CatchClauseVisitor;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector.LogDetection;
 
+import ca.concordia.soen6591.antipattern_detector.visitors.MethodDeclarationVisitor;
+
+
 public class StaticAnalyzer {
     public static final Logger LOG = LogManager.getLogger(StaticAnalyzer.class);
-    static int numDestructiveWrappings = 0, numCatchClauses = 0, numLogAndThrow = 0;
+    static int numDestructiveWrappings = 0, numCatchClauses = 0, numThrowsKitchenSink=0,numMethods=0, numLogAndThrow = 0;
     static final CUParser COMPILATION_UNIT_PARSER = new CUParser();
+    
 
 
 
@@ -25,6 +29,9 @@ public class StaticAnalyzer {
         LOG.warn("Anti-pattern: Destructive Wrapping Detected in the class " + compilationUnitName + " at line " + compilationUnit.getLineNumber(position));
     }
 
+    public static void logDetection(String antipatternName, CompilationUnit compilationUnit , String compilationUnitName , int position) {
+        LOG.warn("Anti-pattern: "+antipatternName+" Detected in the class " + compilationUnitName + " at line " + compilationUnit.getLineNumber(position));
+    }
 
     public static void main(String[] args) throws IOException {
 
