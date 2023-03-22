@@ -74,6 +74,25 @@ public class StaticAnalyzer {
         	LOG.info("__________Log and Throw Antipatterns Results__________");
         	LOG.info("Number of log and throw patterns detected: " + numLogAndThrow);
         	LOG.info("Exiting the program with status code 0");  
+        
+        for(Path path:javaFiles) {
+        try {
+            CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
+            MethodDeclarationVisitor exceptionVisitor = new MethodDeclarationVisitor(path.toString(),parsedCU);
+            parsedCU.accept(exceptionVisitor);
+            numThrowsKitchenSink += exceptionVisitor.getNumAntiPatternsDetected();
+            numMethods += exceptionVisitor.getNumMethods();
+        } catch (Exception e) {
+              LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
+        }
+    }
+        
+    LOG.info("__________Throws Kitchen Sink Antipattern Results__________");
+    LOG.info("Number of Method Declaration detected: " + numMethods);
+    LOG.info("Number of throws kitchen sink patterns detected: " + numThrowsKitchenSink);
+    LOG.info("Exiting the program with status code 0");
+        
+        
     }
 
 
