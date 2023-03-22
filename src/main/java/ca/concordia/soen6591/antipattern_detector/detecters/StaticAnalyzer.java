@@ -13,13 +13,14 @@ import ca.concordia.soen6591.antipattern_detector.utility.FileWalker;
 import ca.concordia.soen6591.antipattern_detector.visitors.CatchClauseVisitor;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector.LogDetection;
+import ca.concordia.soen6591.antipattern_detector.visitors.NestedTryVisitor;
 
 import ca.concordia.soen6591.antipattern_detector.visitors.MethodDeclarationVisitor;
 
 
 public class StaticAnalyzer {
     public static final Logger LOG = LogManager.getLogger(StaticAnalyzer.class);
-    static int numDestructiveWrappings = 0, numCatchClauses = 0, numThrowsKitchenSink=0,numMethods=0, numLogAndThrow = 0;
+    static int numDestructiveWrappings = 0, numCatchClauses = 0, numThrowsKitchenSink=0,numMethods=0, numLogAndThrow = 0,numNestedTryDetected=0;
     static final CUParser COMPILATION_UNIT_PARSER = new CUParser();
     
 
@@ -35,7 +36,7 @@ public class StaticAnalyzer {
 
     public static void main(String[] args) throws IOException {
 
-        final String dirPath = "/Users/pravallikachowdary/Desktop/Old Files/SOEN Mining/Assignment/fortune-cookie-shop";
+        final String dirPath = "D:\\STUDY\\Masters\\Term 5\\Mining\\Assignment 2\\fortune-cookie-shop-master";
         final FileWalker fileWalker = new FileWalker(dirPath);
         LOG.info("Program started successfully!!");
         List<Path> javaFiles = fileWalker.filewalk();
@@ -91,6 +92,24 @@ public class StaticAnalyzer {
     LOG.info("Number of Method Declaration detected: " + numMethods);
     LOG.info("Number of throws kitchen sink patterns detected: " + numThrowsKitchenSink);
     LOG.info("Exiting the program with status code 0");
+
+        /**
+         * @author: Aniket Tailor
+         * This for loop is for detecting Nested Try anti pattern.
+         */
+        for (Path path : javaFiles) {
+            try {
+                CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
+                NestedTryVisitor exceptionVisitor = new NestedTryVisitor(path.toString(), parsedCU);
+                parsedCU.accept(exceptionVisitor);
+                numNestedTryDetected += exceptionVisitor.getNumAntiPatternsDetected();
+            } catch (Exception e) {
+                LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
+            }
+        }
+        LOG.info("__________Nested-Try Anti-pattern Detector Results __________");
+        LOG.info("Number of Nested Try patterns detected: " + numNestedTryDetected);
+        LOG.info("Exiting the program with status code 0\n");
         
         
     }
