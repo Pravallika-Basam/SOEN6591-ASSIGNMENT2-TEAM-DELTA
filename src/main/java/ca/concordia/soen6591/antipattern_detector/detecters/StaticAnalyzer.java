@@ -15,7 +15,7 @@ import ca.concordia.soen6591.antipattern_detector.visitors.CatchClauseVisitor;
 
 public class StaticAnalyzer {
     public static final Logger LOG = LogManager.getLogger(StaticAnalyzer.class);
-    static int numDestructiveWrappings = 0, numCatchClauses = 0, numNestedTryDetected=0;
+    static int numDestructiveWrappings = 0, numCatchClauses = 0, numNestedTryDetected=0,numMethods=0;
     static final CUParser COMPILATION_UNIT_PARSER = new CUParser();
 
 
