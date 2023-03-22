@@ -16,7 +16,7 @@ import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector.L
 
 public class StaticAnalyzer {
     public static final Logger LOG = LogManager.getLogger(StaticAnalyzer.class);
-    static int numDestructiveWrappings = 0, numCatchClauses = 0, numLogAndThrow = 0, numCatch = 0;
+    static int numDestructiveWrappings = 0, numCatchClauses = 0, numLogAndThrow = 0;
     static final CUParser COMPILATION_UNIT_PARSER = new CUParser();
 
 
@@ -56,7 +56,6 @@ public class StaticAnalyzer {
         	LogAndThrowDetector exceptionVisitor = new LogAndThrowDetector(path.toString(), parsedCU);
         	parsedCU.accept(exceptionVisitor);
         	numLogAndThrow += exceptionVisitor.getNumAntiPatternsDetected();
-        	numCatch += exceptionVisitor.getNumCatchClauses();
         	List<LogDetection> detections = exceptionVisitor.getDetectionList();
         	for (LogDetection detection : detections) {
         	LOG.warn("Anti-pattern: Log and Throw detected in the file " + path.toString() + " at line " + detection.getLineNumber());
@@ -66,7 +65,6 @@ public class StaticAnalyzer {
         	}
         	}
         	LOG.info("__________Log and Throw Antipatterns Results__________");
-        	LOG.info("Number of Method Declaration detected: " + numCatch);
         	LOG.info("Number of log and throw patterns detected: " + numLogAndThrow);
         	LOG.info("Exiting the program with status code 0");  
     }

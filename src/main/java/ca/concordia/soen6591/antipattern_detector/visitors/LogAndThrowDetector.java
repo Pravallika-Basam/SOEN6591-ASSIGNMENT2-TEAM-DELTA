@@ -8,9 +8,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
-import ca.concordia.soen6591.antipattern_detector.detecters.StaticAnalyzer;
 
 public class LogAndThrowDetector extends ASTVisitor {
 
@@ -25,6 +23,7 @@ public class LogAndThrowDetector extends ASTVisitor {
         this.compilationUnit = compilationUnit;
     }
 
+    @SuppressWarnings("unchecked") 
     @Override
     public boolean visit(CatchClause node) {
         numCatchClauses++;
@@ -35,7 +34,6 @@ public class LogAndThrowDetector extends ASTVisitor {
                 if (invocation.getName().toString().equals("printStackTrace")) {
                     int lineNumber = compilationUnit.getLineNumber(invocation.getStartPosition());
                     detectionList.add(new LogDetection(compilationUnitName, lineNumber));
-                    StaticAnalyzer.logDetection(compilationUnit, compilationUnitName, invocation.getStartPosition());
                     numAntiPatternsDetected++;
                 }
             }
