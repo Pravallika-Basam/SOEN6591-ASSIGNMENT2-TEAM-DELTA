@@ -58,6 +58,12 @@ public class StaticAnalyzer {
         LOG.info("Number of destructive wrapping patterns detected: " + numDestructiveWrappings);
         LOG.info("Exiting the program with status code 0");
 
+        
+        /**
+         * @author: Ankur Das
+         * This for loop is for detecting Log and Throw anti pattern.
+         */
+        
         for (Path path : javaFiles) {
         	try {
         	CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
