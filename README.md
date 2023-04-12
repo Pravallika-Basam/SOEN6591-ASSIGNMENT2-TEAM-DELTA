@@ -1,6 +1,6 @@
 # Assignment 2 - Anti-Pattern Detection
 
-This is a group project for the course X, where we have implemented anti-pattern detection tools for different code smells. The following are the anti-patterns and their corresponding contributors:
+This is a group project for the course SOEN 6591, where we have implemented anti-pattern detection tools for different code smells. The following are the anti-patterns and their corresponding contributors:
 
 1. **Log and Throw Detector** - contributed by Ankur
 2. **Throws Kitchen Sink** - contributed by Urvish
