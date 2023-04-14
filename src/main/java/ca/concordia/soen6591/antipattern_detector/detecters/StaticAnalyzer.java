@@ -106,9 +106,9 @@ public class StaticAnalyzer {
         for (Path path : javaFiles) {
             try {
                 CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
-                NestedTryVisitor exceptionVisitor = new NestedTryVisitor(path.toString(), parsedCU);
-                parsedCU.accept(exceptionVisitor);
-                numNestedTryDetected += exceptionVisitor.getNumAntiPatternsDetected();
+                NestedTryVisitor Visitor = new NestedTryVisitor(path.toString(), parsedCU);
+                parsedCU.accept(Visitor);
+                numNestedTryDetected += Visitor.getNumAntiPatternsDetected();
             } catch (Exception e) {
                 LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
             }
@@ -116,8 +116,6 @@ public class StaticAnalyzer {
         LOG.info("__________Nested-Try Anti-pattern Detector Results __________");
         LOG.info("Number of Nested Try patterns detected: " + numNestedTryDetected);
         LOG.info("Exiting the program with status code 0\n");
-        
-        
     }
 
 

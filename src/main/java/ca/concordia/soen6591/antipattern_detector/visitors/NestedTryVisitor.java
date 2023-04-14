@@ -1,9 +1,12 @@
 package ca.concordia.soen6591.antipattern_detector.visitors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 import org.eclipse.jdt.core.dom.*;
 import ca.concordia.soen6591.antipattern_detector.detecters.StaticAnalyzer;
 
+/**
+ * @author: Aniket Tailor
+ * This class extends ASTVisitor class and implements the logic to traverse the code for detecting Nested try.
+ */
 public class NestedTryVisitor extends ASTVisitor {
     private int numAntiPatternsDetected = 0;
     private String compilationUnitName;
@@ -14,30 +17,35 @@ public class NestedTryVisitor extends ASTVisitor {
         this.compilationUnit = compilationUnit;
     }
 
-    private final String REGEX = "(\\s)*try(\\s|\\n|\\r){0,}\\{";
+    /**
+     *This code overrides the visit method to detect TryStatement anti-patterns by visiting
+     * each statement in the body of the provided node and
+     * incrementing a counter while calling another method.
+     */
     @Override
     public boolean visit(TryStatement node) {
 
-        String body = node.getBody().toString();
-        if(hasNestedTry(body)){
-            printDetected(node.getStartPosition());
-            numAntiPatternsDetected = numAntiPatternsDetected + 1;
+        List<Statement> statements = node.getBody().statements();
+        for(Statement statement: statements){
+            if(statement instanceof TryStatement) {
+                printDetected(node.getStartPosition());
+                numAntiPatternsDetected++;
+            }
         }
         return super.visit(node);
     }
 
-    private boolean hasNestedTry(String body) {
-        Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher(body);
-        while(matcher.find())
-            return true;
-        return false;
-    }
-
+    /**
+     * This method prints the total number of Nested try anti-patterns detected
+     */
     public int getNumAntiPatternsDetected() {
         return numAntiPatternsDetected;
     }
 
+    /**
+     *
+     * @param position It shows the position where the Anti pattern is detected.
+     */
     private void printDetected(int position) {
         StaticAnalyzer.logDetection("Nested Try", compilationUnit, compilationUnitName, position);
     }
