@@ -22,13 +22,6 @@ public class StaticAnalyzer {
     public static final Logger LOG = LogManager.getLogger(StaticAnalyzer.class);
     static int numDestructiveWrappings = 0, numCatchClauses = 0, numThrowsKitchenSink=0,numMethods=0, numLogAndThrow = 0,numNestedTryDetected=0;
     static final CUParser COMPILATION_UNIT_PARSER = new CUParser();
-    
-
-
-
-    public static void logDetection(CompilationUnit compilationUnit , String compilationUnitName , int position) {
-        LOG.warn("Anti-pattern: Destructive Wrapping Detected in the class " + compilationUnitName + " at line " + compilationUnit.getLineNumber(position));
-    }
 
     public static void logDetection(String antipatternName, CompilationUnit compilationUnit , String compilationUnitName , int position) {
         LOG.warn("Anti-pattern: "+antipatternName+" Detected in the class " + compilationUnitName + " at line " + compilationUnit.getLineNumber(position));
@@ -36,9 +29,8 @@ public class StaticAnalyzer {
 
     public static void main(String[] args) throws IOException {
 
-        final String dirPath = "D:\\STUDY\\Masters\\Term 5\\Mining\\Assignment 2\\fortune-cookie-shop-master";
+        final String dirPath = "/Users/pravallikachowdary/Desktop/SOEN 6591 Project Final/appsmith";
         final FileWalker fileWalker = new FileWalker(dirPath);
-        LOG.info("Program started successfully!!");
         List<Path> javaFiles = fileWalker.filewalk();
         for (Path path : javaFiles) {
             try {
@@ -54,7 +46,6 @@ public class StaticAnalyzer {
         }
 
         LOG.info("__________Program Analysis Results__________");
-        LOG.info("Number of catch clauses detected: " + numCatchClauses);
         LOG.info("Number of destructive wrapping patterns detected: " + numDestructiveWrappings);
         LOG.info("Exiting the program with status code 0");
 
@@ -95,7 +86,6 @@ public class StaticAnalyzer {
     }
         
     LOG.info("__________Throws Kitchen Sink Antipattern Results__________");
-    LOG.info("Number of Method Declaration detected: " + numMethods);
     LOG.info("Number of throws kitchen sink patterns detected: " + numThrowsKitchenSink);
     LOG.info("Exiting the program with status code 0");
 

@@ -59,7 +59,7 @@ public class CatchClauseVisitor extends ASTVisitor {
     }
 
     private void printDetected(int position) {
-        StaticAnalyzer.logDetection(compilationUnit , compilationUnitName , position);
+        StaticAnalyzer.logDetection("Destructive Wrapping",compilationUnit , compilationUnitName , position);
     }
 
 }
