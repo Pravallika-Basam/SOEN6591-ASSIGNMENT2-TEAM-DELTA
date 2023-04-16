@@ -23,7 +23,6 @@ public class CatchClauseVisitor extends ASTVisitor {
      * @param node the CatchClause node being visited
      * @return true if the visitor should continue visiting the AST, false otherwise
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean visit(CatchClause node) {
         numCatchClauses++;
@@ -31,22 +30,12 @@ public class CatchClauseVisitor extends ASTVisitor {
             List<Statement> statements = node.getBody().statements();
             statements.forEach((s) -> {
                 if (s instanceof ThrowStatement) {
-                    SimpleName exceptionName = node.getException().getName();
-                    s.accept(new ASTVisitor() {
-                        @Override
-                        public boolean visit(SimpleName node) {
-                            if (exceptionName.toString().equals(node.toString())) {
-                                printDetected(node.getStartPosition());
-                                numAntiPatternsDetected++;
-                            }
-                            return super.visit(node);
-                        }
-                    });
+                    printDetected(node.getStartPosition());
+                    numAntiPatternsDetected++;
                 }
             });
 
         }
-
         return super.visit(node);
     }
 
