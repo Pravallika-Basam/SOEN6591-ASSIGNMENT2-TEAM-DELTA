@@ -73,6 +73,10 @@ public class StaticAnalyzer {
         	LOG.info("Number of log and throw patterns detected: " + numLogAndThrow);
         	LOG.info("Exiting the program with status code 0");  
         
+    	/**
+         * @author: Urvish Tanti
+         * This for loop is for detecting Throws kitchen Sink anti pattern.
+         */
         for(Path path:javaFiles) {
         try {
             CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
