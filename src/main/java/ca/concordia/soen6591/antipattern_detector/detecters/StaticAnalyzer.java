@@ -29,7 +29,7 @@ public class StaticAnalyzer {
 
     public static void main(String[] args) throws IOException {
 
-        final String dirPath = "/Users/pravallikachowdary/Desktop/SOEN 6591 Project Final/appsmith";
+        final String dirPath = "D:\\STUDY\\Masters\\Term 5\\Mining\\Assignment 2\\appsmith";
         final FileWalker fileWalker = new FileWalker(dirPath);
         List<Path> javaFiles = fileWalker.filewalk();
         for (Path path : javaFiles) {
