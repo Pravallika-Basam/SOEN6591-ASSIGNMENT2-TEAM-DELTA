@@ -25,11 +25,15 @@ public class NestedTryVisitor extends ASTVisitor {
     @Override
     public boolean visit(TryStatement node) {
 
+        boolean nestedTryFound = false;
         List<Statement> statements = node.getBody().statements();
-        for(Statement statement: statements){
-            if(statement instanceof TryStatement) {
-                printDetected(node.getStartPosition());
-                numAntiPatternsDetected++;
+        for (Statement statement : statements) {
+            if (statement instanceof TryStatement) {
+                if (!nestedTryFound) {
+                    printDetected(node.getStartPosition());
+                    numAntiPatternsDetected++;
+                    nestedTryFound = true;
+                }
             }
         }
         return super.visit(node);
