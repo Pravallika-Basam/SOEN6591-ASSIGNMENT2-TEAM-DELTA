@@ -12,7 +12,7 @@ public class MethodDeclarationVisitor extends ASTVisitor {
     private String compilationUnitName;
     private CompilationUnit compilationUnit;
 
-    public MethodDeclarationVisitor(String unitName , CompilationUnit compilationUnit) {
+    public MethodDeclarationVisitor(String unitName, CompilationUnit compilationUnit) {
         this.compilationUnitName = unitName;
         this.compilationUnit = compilationUnit;
     }
@@ -32,6 +32,27 @@ public class MethodDeclarationVisitor extends ASTVisitor {
             printDetected(node.getStartPosition());
             numAntiPatternsDetected++;
         }
+
+        // Visit all statements in the method body to check for throws in loop statements
+        node.getBody().accept(new ASTVisitor() {
+            @Override
+            public boolean visit(ThrowStatement throwStatement) {
+                // Check if the throw statement is inside a loop statement or a try block
+                ASTNode parent = throwStatement.getParent();
+                while (parent != null && !(parent instanceof MethodDeclaration)) {
+                    if (parent instanceof EnhancedForStatement || parent instanceof ForStatement
+                            || parent instanceof WhileStatement || parent instanceof DoStatement
+                            || parent instanceof TryStatement) {
+                        printDetected(throwStatement.getStartPosition());
+                        numAntiPatternsDetected++;
+                        break;
+                    }
+                    parent = parent.getParent();
+                }
+                return super.visit(throwStatement);
+            }
+        });
+
         return super.visit(node);
     }
 
@@ -44,6 +65,6 @@ public class MethodDeclarationVisitor extends ASTVisitor {
     }
 
     private void printDetected(int position) {
-        StaticAnalyzer.logDetection("Throws Kitchen Sink",compilationUnit , compilationUnitName , position);
+        StaticAnalyzer.logDetection("Throws Kitchen Sink", compilationUnit, compilationUnitName, position);
     }
 }

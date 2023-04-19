@@ -14,13 +14,13 @@ import ca.concordia.soen6591.antipattern_detector.visitors.CatchClauseVisitor;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector.LogDetection;
 import ca.concordia.soen6591.antipattern_detector.visitors.NestedTryVisitor;
-
+import ca.concordia.soen6591.antipattern_detector.visitors.ThrowsGenericVisitor;
 import ca.concordia.soen6591.antipattern_detector.visitors.MethodDeclarationVisitor;
 
 
 public class StaticAnalyzer {
     public static final Logger LOG = LogManager.getLogger(StaticAnalyzer.class);
-    static int numDestructiveWrappings = 0, numCatchClauses = 0, numThrowsKitchenSink=0,numMethods=0, numLogAndThrow = 0,numNestedTryDetected=0;
+    static int numDestructiveWrappings = 0, numCatchClauses = 0, numThrowsKitchenSink=0,numMethods=0, numLogAndThrow = 0,numNestedTryDetected=0, numThrowsGeneric = 0;
     static final CUParser COMPILATION_UNIT_PARSER = new CUParser();
 
     public static void logDetection(String antipatternName, CompilationUnit compilationUnit , String compilationUnitName , int position) {
@@ -29,7 +29,7 @@ public class StaticAnalyzer {
 
     public static void main(String[] args) throws IOException {
 
-        final String dirPath = "D:\\STUDY\\Masters\\Term 5\\Mining\\Assignment 2\\appsmith";
+        final String dirPath = "C:\\Users\\urvis\\Desktop\\appsmith-release";
         final FileWalker fileWalker = new FileWalker(dirPath);
         List<Path> javaFiles = fileWalker.filewalk();
         for (Path path : javaFiles) {
@@ -73,20 +73,45 @@ public class StaticAnalyzer {
         	LOG.info("Number of log and throw patterns detected: " + numLogAndThrow);
         	LOG.info("Exiting the program with status code 0");  
         
+        	/**
+             * @author: Urvish Tanti
+             * This for loop is for detecting Throws kitchen Sink anti pattern.
+             */
+            for(Path path:javaFiles) {
+            try {
+                CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
+                MethodDeclarationVisitor exceptionVisitor = new MethodDeclarationVisitor(path.toString(),parsedCU);
+                parsedCU.accept(exceptionVisitor);
+                numThrowsKitchenSink += exceptionVisitor.getNumAntiPatternsDetected();
+                numMethods += exceptionVisitor.getNumMethods();
+            } catch (Exception e) {
+                  LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
+            }
+        }
+            
+        LOG.info("__________Throws Kitchen Sink Antipattern Results__________");
+        LOG.info("Number of throws kitchen sink patterns detected: " + numThrowsKitchenSink);
+        LOG.info("Exiting the program with status code 0");            
+ 
+        
+        /**
+         * @author: Urvish Tanti
+         * This for loop is for detecting Throws Generic anti pattern.
+         */
         for(Path path:javaFiles) {
         try {
             CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
-            MethodDeclarationVisitor exceptionVisitor = new MethodDeclarationVisitor(path.toString(),parsedCU);
+            ThrowsGenericVisitor exceptionVisitor = new ThrowsGenericVisitor(path.toString(),parsedCU);
             parsedCU.accept(exceptionVisitor);
-            numThrowsKitchenSink += exceptionVisitor.getNumAntiPatternsDetected();
+            numThrowsGeneric += exceptionVisitor.getNumAntiPatternsDetected();
             numMethods += exceptionVisitor.getNumMethods();
         } catch (Exception e) {
               LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
         }
     }
         
-    LOG.info("__________Throws Kitchen Sink Antipattern Results__________");
-    LOG.info("Number of throws kitchen sink patterns detected: " + numThrowsKitchenSink);
+    LOG.info("__________Throws Generic Antipattern Results__________");
+    LOG.info("Number of throws Generic patterns detected: " + numThrowsGeneric);
     LOG.info("Exiting the program with status code 0");
 
         /**
@@ -106,7 +131,7 @@ public class StaticAnalyzer {
         LOG.info("__________Nested-Try Anti-pattern Detector Results __________");
         LOG.info("Number of Nested Try patterns detected: " + numNestedTryDetected);
         LOG.info("Exiting the program with status code 0\n");
-    }
+  }
 
 
 
