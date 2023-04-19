@@ -29,7 +29,7 @@ public class StaticAnalyzer {
 
     public static void main(String[] args) throws IOException {
 
-        final String dirPath = "D:\\STUDY\\Masters\\Term 5\\Mining\\Assignment 2\\appsmith";
+        final String dirPath = "C:\\Users\\urvis\\Desktop\\appsmith-release";
         final FileWalker fileWalker = new FileWalker(dirPath);
         List<Path> javaFiles = fileWalker.filewalk();
         for (Path path : javaFiles) {
@@ -73,21 +73,25 @@ public class StaticAnalyzer {
         	LOG.info("Number of log and throw patterns detected: " + numLogAndThrow);
         	LOG.info("Exiting the program with status code 0");  
         
-        for(Path path:javaFiles) {
-        try {
-            CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
-            MethodDeclarationVisitor exceptionVisitor = new MethodDeclarationVisitor(path.toString(),parsedCU);
-            parsedCU.accept(exceptionVisitor);
-            numThrowsKitchenSink += exceptionVisitor.getNumAntiPatternsDetected();
-            numMethods += exceptionVisitor.getNumMethods();
-        } catch (Exception e) {
-              LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
+        	/**
+             * @author: Urvish Tanti
+             * This for loop is for detecting Throws kitchen Sink anti pattern.
+             */
+            for(Path path:javaFiles) {
+            try {
+                CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
+                MethodDeclarationVisitor exceptionVisitor = new MethodDeclarationVisitor(path.toString(),parsedCU);
+                parsedCU.accept(exceptionVisitor);
+                numThrowsKitchenSink += exceptionVisitor.getNumAntiPatternsDetected();
+                numMethods += exceptionVisitor.getNumMethods();
+            } catch (Exception e) {
+                  LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
+            }
         }
-    }
-        
-    LOG.info("__________Throws Kitchen Sink Antipattern Results__________");
-    LOG.info("Number of throws kitchen sink patterns detected: " + numThrowsKitchenSink);
-    LOG.info("Exiting the program with status code 0");
+            
+        LOG.info("__________Throws Kitchen Sink Antipattern Results__________");
+        LOG.info("Number of throws kitchen sink patterns detected: " + numThrowsKitchenSink);
+        LOG.info("Exiting the program with status code 0");
 
         /**
          * @author: Aniket Tailor
