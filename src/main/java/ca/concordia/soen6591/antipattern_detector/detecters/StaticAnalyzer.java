@@ -14,13 +14,15 @@ import ca.concordia.soen6591.antipattern_detector.visitors.CatchClauseVisitor;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector;
 import ca.concordia.soen6591.antipattern_detector.visitors.LogAndThrowDetector.LogDetection;
 import ca.concordia.soen6591.antipattern_detector.visitors.NestedTryVisitor;
-
+import ca.concordia.soen6591.antipattern_detector.visitors.OverCatchDetector;
+import ca.concordia.soen6591.antipattern_detector.visitors.OverCatchDetector.OverCatch;
 import ca.concordia.soen6591.antipattern_detector.visitors.MethodDeclarationVisitor;
 
 
 public class StaticAnalyzer {
     public static final Logger LOG = LogManager.getLogger(StaticAnalyzer.class);
     static int numDestructiveWrappings = 0, numCatchClauses = 0, numThrowsKitchenSink=0,numMethods=0, numLogAndThrow = 0,numNestedTryDetected=0;
+    static int numOverCatch = 0;
     static final CUParser COMPILATION_UNIT_PARSER = new CUParser();
 
     public static void logDetection(String antipatternName, CompilationUnit compilationUnit , String compilationUnitName , int position) {
@@ -69,9 +71,35 @@ public class StaticAnalyzer {
         	LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
         	}
         	}
-        	LOG.info("__________Log and Throw Antipatterns Results__________");
-        	LOG.info("Number of log and throw patterns detected: " + numLogAndThrow);
-        	LOG.info("Exiting the program with status code 0");  
+    LOG.info("__________Log and Throw Antipatterns Results__________");
+    LOG.info("Number of log and throw patterns detected: " + numLogAndThrow);
+    LOG.info("Exiting the program with status code 0");  
+
+
+        /**
+         * @author: Ankur Das
+         * This for loop is for detecting OverCatch anti pattern.
+         */
+
+
+         for (Path path : javaFiles) {
+            try {
+                CompilationUnit parsedCU = COMPILATION_UNIT_PARSER.parseCU(path.toString());
+                OverCatchDetector visitor = new OverCatchDetector(path.toString(), parsedCU);
+                parsedCU.accept(visitor);
+                numOverCatch += visitor.getNumAntiPatternsDetected();
+                List<OverCatch> detections = visitor.getDetectionList();
+                for (OverCatch detection : detections) {
+                	LOG.warn("Anti-pattern: Over-Catch detected in the file " + path.toString() + " at line " + detection.getLineNumber());
+                	}
+                	} catch (Exception e) {
+                	LOG.error("An exception occurred while processing file: " + path.toString() + ". Details: " + e.getMessage());
+                	}
+        }
+
+        LOG.info("__________Over-catch Antipattern Results__________");
+        LOG.info("Number of Over-catch patterns detected: " + numOverCatch);
+        LOG.info("Exiting the program with status code 0");
         
         for(Path path:javaFiles) {
         try {
